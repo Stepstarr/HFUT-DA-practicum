@@ -16,6 +16,7 @@ OUTPUT_XLSX = "data/news_data_result.xlsx"
 TITLE_COL = "title"
 TRUE_LABEL_COL = "label"
 PRED_LABEL_COL = "大模型返回结果"
+SUCCESS_COL = "分类是否正确"
 MAX_WORKERS = 4
 
 MODEL_NAME = "deepseek-chat"
@@ -56,6 +57,8 @@ def main() -> None:
 
     if PRED_LABEL_COL not in df.columns:
         df[PRED_LABEL_COL] = pd.NA
+    if SUCCESS_COL not in df.columns:
+        df[SUCCESS_COL] = pd.NA
 
     tasks: list[tuple[Any, str]] = []
     for idx, title in df[TITLE_COL].items():
@@ -83,6 +86,9 @@ def main() -> None:
 
     for idx, pred in results.items():
         df.loc[idx, PRED_LABEL_COL] = pred
+        pred_clean = "" if pd.isna(pred) else str(pred).strip()
+        true_clean = "" if pd.isna(df.loc[idx, TRUE_LABEL_COL]) else str(df.loc[idx, TRUE_LABEL_COL]).strip()
+        df.loc[idx, SUCCESS_COL] = "正确" if pred_clean.casefold() == true_clean.casefold() else "错误"
 
     valid_df = df[df[TITLE_COL].apply(lambda x: "" if pd.isna(x) else str(x).strip()) != ""].copy()
     correct_mask = (
