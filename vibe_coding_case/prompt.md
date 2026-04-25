@@ -1,0 +1,4 @@
+做一个页面，页面可以输入用户评论，点击分析，会得到用户评论中包含的属性
+获取用户评论包含的属性方法参照
+@api_examples/analysis_cases/process_car_review_data.py 里调用大模型API的方法
+代码生成在Vibe_coding_case
